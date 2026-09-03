@@ -1,0 +1,100 @@
+name: Build & Release Tic-Tac-Toe
+
+on:
+  push:
+    branches: ["master"]
+
+  pull_request:
+    branches: ["master"]
+
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: windows-2025-vs2026
+
+    steps:
+      # ---------------------------------------------------------
+      # Récupération du repository
+      # ---------------------------------------------------------
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      # ---------------------------------------------------------
+      # Configuration de MSBuild / Visual Studio
+      # ---------------------------------------------------------
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v3
+        with:
+          msbuild-architecture: x64
+          vs-version: '[18.0,19.0)'
+
+      # ---------------------------------------------------------
+      # Compilation
+      # ---------------------------------------------------------
+      - name: Build solution
+        run: >
+          msbuild "Tic-Tac-Toe.slnx"
+          /m
+          /t:Build
+          /p:Configuration=Release
+          /p:Platform=x64
+          /verbosity:minimal
+
+      # ---------------------------------------------------------
+      # Création du ZIP
+      # Seulement lors d'un push sur master
+      # ---------------------------------------------------------
+      - name: Package build
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        shell: pwsh
+        run: |
+          $exe = Get-ChildItem -Path . -Recurse -Filter "*.exe" |
+            Where-Object {
+              $_.FullName -match '\\x64\\Release\\'
+            } |
+            Select-Object -First 1
+
+          if (-not $exe) {
+            Write-Host "Executables trouves :"
+            Get-ChildItem -Path . -Recurse -Filter "*.exe"
+
+            throw "Aucun executable Release x64 trouve."
+          }
+
+          Write-Host "Executable trouve :"
+          Write-Host $exe.FullName
+
+          $packageDir = "package"
+
+          New-Item `
+            -ItemType Directory `
+            -Path $packageDir `
+            -Force
+
+          Copy-Item `
+            $exe.FullName `
+            "$packageDir\Tic-Tac-Toe.exe"
+
+          Compress-Archive `
+            -Path "$packageDir\*" `
+            -DestinationPath "Tic-Tac-Toe-Windows-x64.zip" `
+            -Force
+
+      # ---------------------------------------------------------
+      # Création automatique de la Release GitHub
+      # ---------------------------------------------------------
+      - name: Create GitHub Release
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "build-${{ github.run_number }}" `
+            "Tic-Tac-Toe-Windows-x64.zip" `
+            --target "${{ github.sha }}" `
+            --title "Tic-Tac-Toe - Build ${{ github.run_number }}" `
+            --generate-notes
