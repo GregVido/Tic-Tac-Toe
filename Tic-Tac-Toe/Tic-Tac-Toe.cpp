@@ -146,13 +146,51 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         }
         break;
     case WM_PAINT:
+    {
+        PAINTSTRUCT ps;
+        HDC hdc = BeginPaint(hWnd, &ps);
+
+        // Récupère la taille intérieure de la fenêtre
+        RECT clientRect;
+        GetClientRect(hWnd, &clientRect);
+
+        int windowWidth = clientRect.right - clientRect.left;
+        int windowHeight = clientRect.bottom - clientRect.top;
+
+        // Position du plateau pour le centrer
+        int boardX = (windowWidth - BOARD_SIZE) / 2;
+        int boardY = (windowHeight - BOARD_SIZE) / 2;
+
+        // Bordure extérieure
+        Rectangle(
+            hdc,
+            boardX,
+            boardY,
+            boardX + BOARD_SIZE,
+            boardY + BOARD_SIZE
+        );
+
+        // Lignes verticales
+        for (int i = 1; i < 3; i++)
         {
-            PAINTSTRUCT ps;
-            BeginPaint(hWnd, &ps);
-            // TODO: Ajoutez n’importe quel code de dessin ici...
-            EndPaint(hWnd, &ps);
+            int x = boardX + i * CELL_SIZE;
+
+            MoveToEx(hdc, x, boardY, nullptr);
+            LineTo(hdc, x, boardY + BOARD_SIZE);
         }
-        break;
+
+        // Lignes horizontales
+        for (int i = 1; i < 3; i++)
+        {
+            int y = boardY + i * CELL_SIZE;
+
+            MoveToEx(hdc, boardX, y, nullptr);
+            LineTo(hdc, boardX + BOARD_SIZE, y);
+        }
+
+        EndPaint(hWnd, &ps);
+    }
+    break;
     case WM_DESTROY:
         PostQuitMessage(0);
         break;
