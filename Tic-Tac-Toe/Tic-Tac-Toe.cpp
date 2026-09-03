@@ -6,6 +6,9 @@
 
 #define MAX_LOADSTRING 100
 
+constexpr int BOARD_SIZE = 450;
+constexpr int CELL_SIZE = BOARD_SIZE / 3;
+
 // Variables globales :
 HINSTANCE hInst;                                // instance actuelle
 WCHAR szTitle[MAX_LOADSTRING];                  // Texte de la barre de titre
