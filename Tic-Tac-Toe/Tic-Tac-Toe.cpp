@@ -211,6 +211,70 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			LineTo(hdc, boardX + BOARD_SIZE, y);
 		}
 
+		// Stylo plus épais pour les X et O
+		HPEN symbolPen = CreatePen(
+			PS_SOLID,
+			8,
+			RGB(30, 30, 30)
+		);
+
+		HPEN oldPen = (HPEN)SelectObject(hdc, symbolPen);
+
+		constexpr int MARGIN = 30;
+
+		for (int row = 0; row < 3; row++)
+		{
+			for (int column = 0; column < 3; column++)
+			{
+				int cellX = boardX + column * CELL_SIZE;
+				int cellY = boardY + row * CELL_SIZE;
+
+				// X
+				if (board[row][column] == 1)
+				{
+					MoveToEx(
+						hdc,
+						cellX + MARGIN,
+						cellY + MARGIN,
+						nullptr
+					);
+
+					LineTo(
+						hdc,
+						cellX + CELL_SIZE - MARGIN,
+						cellY + CELL_SIZE - MARGIN
+					);
+
+					MoveToEx(
+						hdc,
+						cellX + CELL_SIZE - MARGIN,
+						cellY + MARGIN,
+						nullptr
+					);
+
+					LineTo(
+						hdc,
+						cellX + MARGIN,
+						cellY + CELL_SIZE - MARGIN
+					);
+				}
+
+				// O
+				else if (board[row][column] == 2)
+				{
+					Ellipse(
+						hdc,
+						cellX + MARGIN,
+						cellY + MARGIN,
+						cellX + CELL_SIZE - MARGIN,
+						cellY + CELL_SIZE - MARGIN
+					);
+				}
+			}
+		}
+
+		SelectObject(hdc, oldPen);
+		DeleteObject(symbolPen);
 
 		EndPaint(hWnd, &ps);
 	}
