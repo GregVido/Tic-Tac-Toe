@@ -211,14 +211,20 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			LineTo(hdc, boardX + BOARD_SIZE, y);
 		}
 
-		// Stylo plus épais pour les X et O
-		HPEN symbolPen = CreatePen(
+		// Stylos pour les symboles
+		HPEN redPen = CreatePen(
 			PS_SOLID,
 			8,
-			RGB(30, 30, 30)
+			RGB(220, 40, 40)
 		);
 
-		HPEN oldPen = (HPEN)SelectObject(hdc, symbolPen);
+		HPEN bluePen = CreatePen(
+			PS_SOLID,
+			8,
+			RGB(40, 100, 220)
+		);
+
+		HPEN oldPen = (HPEN)GetCurrentObject(hdc, OBJ_PEN);
 
 		constexpr int MARGIN = 30;
 
@@ -229,9 +235,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				int cellX = boardX + column * CELL_SIZE;
 				int cellY = boardY + row * CELL_SIZE;
 
-				// X
+				// X rouge
 				if (board[row][column] == 1)
 				{
+					SelectObject(hdc, redPen);
+
 					MoveToEx(
 						hdc,
 						cellX + MARGIN,
@@ -259,9 +267,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 					);
 				}
 
-				// O
+				// O bleu
 				else if (board[row][column] == 2)
 				{
+					SelectObject(hdc, bluePen);
+
 					Ellipse(
 						hdc,
 						cellX + MARGIN,
@@ -273,8 +283,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			}
 		}
 
+		// Remet le stylo précédent
 		SelectObject(hdc, oldPen);
-		DeleteObject(symbolPen);
+
+		// Libère les stylos
+		DeleteObject(redPen);
+		DeleteObject(bluePen);
 
 		EndPaint(hWnd, &ps);
 	}
