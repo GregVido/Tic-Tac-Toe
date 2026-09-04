@@ -4,10 +4,22 @@
 #include "framework.h"
 #include "Tic-Tac-Toe.h"
 
+#include <random>
+
 #define MAX_LOADSTRING 100
 
 constexpr int BOARD_SIZE = 450;
 constexpr int CELL_SIZE = BOARD_SIZE / 3;
+
+// 0 = vide
+// 1 = X
+// 2 = O
+int board[3][3] = {};
+
+// Générateur aléatoire
+std::random_device rd;
+std::mt19937 randomGenerator(rd());
+std::uniform_int_distribution<int> randomSymbol(1, 2);
 
 // Variables globales :
 HINSTANCE hInst;                                // instance actuelle
