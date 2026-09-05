@@ -186,6 +186,66 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		int boardX = (windowWidth - BOARD_SIZE) / 2;
 		int boardY = (windowHeight - BOARD_SIZE) / 2;
 
+		// ==============================
+// Texte du joueur actuel
+// ==============================
+
+		HFONT playerFont = CreateFontW(
+			32,
+			0,
+			0,
+			0,
+			FW_BOLD,
+			FALSE,
+			FALSE,
+			FALSE,
+			DEFAULT_CHARSET,
+			OUT_DEFAULT_PRECIS,
+			CLIP_DEFAULT_PRECIS,
+			CLEARTYPE_QUALITY,
+			DEFAULT_PITCH | FF_DONTCARE,
+			L"Segoe UI"
+		);
+
+		HFONT oldFont = (HFONT)SelectObject(hdc, playerFont);
+
+		SetBkMode(hdc, TRANSPARENT);
+
+		RECT playerTextRect = {
+			0,
+			boardY - 60,
+			windowWidth,
+			boardY - 10
+		};
+
+		if (currentPlayer == 1)
+		{
+			SetTextColor(hdc, RGB(220, 40, 40));
+
+			DrawTextW(
+				hdc,
+				L"Au tour du Joueur 1 (X)",
+				-1,
+				&playerTextRect,
+				DT_CENTER | DT_VCENTER | DT_SINGLELINE
+			);
+		}
+		else
+		{
+			SetTextColor(hdc, RGB(40, 100, 220));
+
+			DrawTextW(
+				hdc,
+				L"Au tour du Joueur 2 (O)",
+				-1,
+				&playerTextRect,
+				DT_CENTER | DT_VCENTER | DT_SINGLELINE
+			);
+		}
+
+		SelectObject(hdc, oldFont);
+		DeleteObject(playerFont);
+
 		// Bordure extérieure
 		Rectangle(
 			hdc,
@@ -335,6 +395,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				InvalidateRect(hWnd, nullptr, TRUE);
 			}
 		}
+
+
 
 		break;
 	}
