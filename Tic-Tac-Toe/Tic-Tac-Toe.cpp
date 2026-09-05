@@ -439,15 +439,20 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			int row = (mouseY - boardY) / CELL_SIZE;
 
 			// Seulement si la case est vide
-			if (board[row][column] == 0)
+			if (board[row][column] == 0 && winner == 0)
 			{
-				// Place le symbole du joueur actuel
+				// Place le symbole
 				board[row][column] = currentPlayer;
 
-				// Change de joueur
-				currentPlayer = (currentPlayer == 1) ? 2 : 1;
+				// Vérifie si ce coup termine la partie
+				winner = CheckWinner();
 
-				// Redessine la fenêtre
+				// Change de joueur seulement si la partie continue
+				if (winner == 0)
+				{
+					currentPlayer = (currentPlayer == 1) ? 2 : 1;
+				}
+
 				InvalidateRect(hWnd, nullptr, TRUE);
 			}
 		}
