@@ -11,6 +11,8 @@
 constexpr int BOARD_SIZE = 450;
 constexpr int CELL_SIZE = BOARD_SIZE / 3;
 
+int currentPlayer = 1;
+
 // 0 = vide
 // 1 = X
 // 2 = O
@@ -323,10 +325,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			// Seulement si la case est vide
 			if (board[row][column] == 0)
 			{
-				// X ou O aléatoire
-				board[row][column] = randomSymbol(randomGenerator);
+				// Place le symbole du joueur actuel
+				board[row][column] = currentPlayer;
 
-				// Demande à Windows de redessiner la fenêtre
+				// Change de joueur
+				currentPlayer = (currentPlayer == 1) ? 2 : 1;
+
+				// Redessine la fenêtre
 				InvalidateRect(hWnd, nullptr, TRUE);
 			}
 		}
