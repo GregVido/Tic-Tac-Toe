@@ -12,6 +12,7 @@ constexpr int BOARD_SIZE = 450;
 constexpr int CELL_SIZE = BOARD_SIZE / 3;
 
 int currentPlayer = 1;
+int winner = 0;
 
 // 0 = vide
 // 1 = X
@@ -33,6 +34,7 @@ ATOM                MyRegisterClass(HINSTANCE hInstance);
 BOOL                InitInstance(HINSTANCE, int);
 LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
+int CheckWinner();
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	_In_opt_ HINSTANCE hPrevInstance,
@@ -139,6 +141,60 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 	return TRUE;
 }
 
+int CheckWinner()
+{
+	// Lignes
+	for (int row = 0; row < 3; row++)
+	{
+		if (board[row][0] != 0 &&
+			board[row][0] == board[row][1] &&
+			board[row][1] == board[row][2])
+		{
+			return board[row][0];
+		}
+	}
+
+	// Colonnes
+	for (int column = 0; column < 3; column++)
+	{
+		if (board[0][column] != 0 &&
+			board[0][column] == board[1][column] &&
+			board[1][column] == board[2][column])
+		{
+			return board[0][column];
+		}
+	}
+
+	// Diagonale \
+	if (board[0][0] != 0 &&
+	board[0][0] == board[1][1] &&
+		board[1][1] == board[2][2])
+		{
+			return board[0][0];
+	}
+
+	// Diagonale /
+	if (board[0][2] != 0 &&
+		board[0][2] == board[1][1] &&
+		board[1][1] == board[2][0])
+	{
+		return board[0][2];
+	}
+
+	// Vérifie s'il reste une case vide
+	for (int row = 0; row < 3; row++)
+	{
+		for (int column = 0; column < 3; column++)
+		{
+			if (board[row][column] == 0)
+				return 0;
+		}
+	}
+
+	// Plus aucune case vide et aucun gagnant
+	return 3;
+}
+
 //
 //  FONCTION : WndProc(HWND, UINT, WPARAM, LPARAM)
 //
@@ -187,8 +243,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		int boardY = (windowHeight - BOARD_SIZE) / 2;
 
 		// ==============================
-// Texte du joueur actuel
-// ==============================
+		// Texte du joueur actuel
+		// ==============================
 
 		HFONT playerFont = CreateFontW(
 			32,
