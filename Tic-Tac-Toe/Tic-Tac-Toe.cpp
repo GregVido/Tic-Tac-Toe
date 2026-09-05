@@ -166,6 +166,7 @@ int CheckWinner()
 	}
 
 	// Diagonale \
+
 	if (board[0][0] != 0 &&
 	board[0][0] == board[1][1] &&
 		board[1][1] == board[2][2])
@@ -274,8 +275,48 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			boardY - 10
 		};
 
-		if (currentPlayer == 1)
+		if (winner == 1)
 		{
+			// Joueur 1 gagne
+			SetTextColor(hdc, RGB(220, 40, 40));
+
+			DrawTextW(
+				hdc,
+				L"Joueur 1 a gagné !",
+				-1,
+				&playerTextRect,
+				DT_CENTER | DT_VCENTER | DT_SINGLELINE
+			);
+		}
+		else if (winner == 2)
+		{
+			// Joueur 2 gagne
+			SetTextColor(hdc, RGB(40, 100, 220));
+
+			DrawTextW(
+				hdc,
+				L"Joueur 2 a gagné !",
+				-1,
+				&playerTextRect,
+				DT_CENTER | DT_VCENTER | DT_SINGLELINE
+			);
+		}
+		else if (winner == 3)
+		{
+			// Match nul
+			SetTextColor(hdc, RGB(50, 50, 50));
+
+			DrawTextW(
+				hdc,
+				L"Match nul !",
+				-1,
+				&playerTextRect,
+				DT_CENTER | DT_VCENTER | DT_SINGLELINE
+			);
+		}
+		else if (currentPlayer == 1)
+		{
+			// Tour joueur 1
 			SetTextColor(hdc, RGB(220, 40, 40));
 
 			DrawTextW(
@@ -288,6 +329,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		}
 		else
 		{
+			// Tour joueur 2
 			SetTextColor(hdc, RGB(40, 100, 220));
 
 			DrawTextW(
