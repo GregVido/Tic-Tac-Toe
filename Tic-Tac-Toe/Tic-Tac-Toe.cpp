@@ -11,6 +11,33 @@
 constexpr int BOARD_SIZE = 450;
 constexpr int CELL_SIZE = BOARD_SIZE / 3;
 
+enum class Screen
+{
+	Menu,
+	Game
+};
+
+enum class PlayerType
+{
+	Human,
+	Bot
+};
+
+enum class BotDifficulty
+{
+	Easy,
+	Medium,
+	Hard
+};
+
+Screen currentScreen = Screen::Menu;
+
+PlayerType player1Type = PlayerType::Human;
+PlayerType player2Type = PlayerType::Human;
+
+BotDifficulty player1Difficulty = BotDifficulty::Easy;
+BotDifficulty player2Difficulty = BotDifficulty::Easy;
+
 int currentPlayer = 1;
 int winner = 0;
 
