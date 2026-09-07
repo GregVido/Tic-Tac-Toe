@@ -856,6 +856,106 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		int mouseX = LOWORD(lParam);
 		int mouseY = HIWORD(lParam);
 
+		if (currentScreen == Screen::Menu)
+		{
+			RECT clientRect;
+			GetClientRect(hWnd, &clientRect);
+
+			int windowWidth = clientRect.right - clientRect.left;
+
+			MenuLayout layout = GetMenuLayout(windowWidth);
+
+			POINT mousePoint = {
+				mouseX,
+				mouseY
+			};
+
+			// ==============================
+			// Joueur 1
+			// ==============================
+
+			if (PtInRect(&layout.j1Human, mousePoint))
+			{
+				player1Type = PlayerType::Human;
+			}
+			else if (PtInRect(&layout.j1Bot, mousePoint))
+			{
+				player1Type = PlayerType::Bot;
+			}
+
+			// Difficulté J1
+			else if (
+				player1Type == PlayerType::Bot &&
+				PtInRect(&layout.j1Easy, mousePoint))
+			{
+				player1Difficulty = BotDifficulty::Easy;
+			}
+			else if (
+				player1Type == PlayerType::Bot &&
+				PtInRect(&layout.j1Medium, mousePoint))
+			{
+				player1Difficulty = BotDifficulty::Medium;
+			}
+			else if (
+				player1Type == PlayerType::Bot &&
+				PtInRect(&layout.j1Hard, mousePoint))
+			{
+				player1Difficulty = BotDifficulty::Hard;
+			}
+
+			// ==============================
+			// Joueur 2
+			// ==============================
+
+			else if (PtInRect(&layout.j2Human, mousePoint))
+			{
+				player2Type = PlayerType::Human;
+			}
+			else if (PtInRect(&layout.j2Bot, mousePoint))
+			{
+				player2Type = PlayerType::Bot;
+			}
+
+			// Difficulté J2
+			else if (
+				player2Type == PlayerType::Bot &&
+				PtInRect(&layout.j2Easy, mousePoint))
+			{
+				player2Difficulty = BotDifficulty::Easy;
+			}
+			else if (
+				player2Type == PlayerType::Bot &&
+				PtInRect(&layout.j2Medium, mousePoint))
+			{
+				player2Difficulty = BotDifficulty::Medium;
+			}
+			else if (
+				player2Type == PlayerType::Bot &&
+				PtInRect(&layout.j2Hard, mousePoint))
+			{
+				player2Difficulty = BotDifficulty::Hard;
+			}
+
+			// ==============================
+			// Jouer
+			// ==============================
+
+			else if (PtInRect(&layout.startButton, mousePoint))
+			{
+				currentScreen = Screen::Game;
+
+				// Nouvelle partie
+				ZeroMemory(board, sizeof(board));
+
+				currentPlayer = 1;
+				winner = 0;
+			}
+
+			InvalidateRect(hWnd, nullptr, TRUE);
+
+			return 0;
+		}
+
 		// Taille actuelle de la fenêtre
 		RECT clientRect;
 		GetClientRect(hWnd, &clientRect);
