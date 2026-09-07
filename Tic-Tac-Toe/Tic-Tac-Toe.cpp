@@ -61,7 +61,67 @@ ATOM                MyRegisterClass(HINSTANCE hInstance);
 BOOL                InitInstance(HINSTANCE, int);
 LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
+
+struct MenuLayout
+{
+	RECT j1Human;
+	RECT j1Bot;
+
+	RECT j1Easy;
+	RECT j1Medium;
+	RECT j1Hard;
+
+	RECT j2Human;
+	RECT j2Bot;
+
+	RECT j2Easy;
+	RECT j2Medium;
+	RECT j2Hard;
+
+	RECT startButton;
+};
+
 int CheckWinner();
+
+MenuLayout GetMenuLayout(int windowWidth)
+{
+	MenuLayout layout{};
+
+	int center = windowWidth / 2;
+
+	// Panneau joueur 1
+	int j1X = center - 300;
+
+	// Panneau joueur 2
+	int j2X = center + 20;
+
+	// Humain / Bot
+	layout.j1Human = { j1X, 180, j1X + 125, 225 };
+	layout.j1Bot = { j1X + 135, 180, j1X + 260, 225 };
+
+	layout.j2Human = { j2X, 180, j2X + 125, 225 };
+	layout.j2Bot = { j2X + 135, 180, j2X + 260, 225 };
+
+	// Difficultés joueur 1
+	layout.j1Easy = { j1X,       290, j1X + 80, 335 };
+	layout.j1Medium = { j1X + 90,  290, j1X + 170, 335 };
+	layout.j1Hard = { j1X + 180, 290, j1X + 260, 335 };
+
+	// Difficultés joueur 2
+	layout.j2Easy = { j2X,       290, j2X + 80, 335 };
+	layout.j2Medium = { j2X + 90,  290, j2X + 170, 335 };
+	layout.j2Hard = { j2X + 180, 290, j2X + 260, 335 };
+
+	// Bouton Jouer
+	layout.startButton = {
+		center - 110,
+		430,
+		center + 110,
+		490
+	};
+
+	return layout;
+}
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	_In_opt_ HINSTANCE hPrevInstance,
