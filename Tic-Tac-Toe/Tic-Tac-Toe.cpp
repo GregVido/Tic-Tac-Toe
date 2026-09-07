@@ -123,6 +123,48 @@ MenuLayout GetMenuLayout(int windowWidth)
 	return layout;
 }
 
+void DrawMenuButton(
+	HDC hdc,
+	const RECT& rect,
+	const wchar_t* text,
+	bool selected,
+	COLORREF selectedColor)
+{
+	HBRUSH backgroundBrush;
+
+	if (selected)
+		backgroundBrush = CreateSolidBrush(selectedColor);
+	else
+		backgroundBrush = CreateSolidBrush(RGB(235, 235, 235));
+
+	FillRect(hdc, &rect, backgroundBrush);
+
+	FrameRect(
+		hdc,
+		&rect,
+		(HBRUSH)GetStockObject(BLACK_BRUSH)
+	);
+
+	SetBkMode(hdc, TRANSPARENT);
+
+	if (selected)
+		SetTextColor(hdc, RGB(255, 255, 255));
+	else
+		SetTextColor(hdc, RGB(30, 30, 30));
+
+	RECT textRect = rect;
+
+	DrawTextW(
+		hdc,
+		text,
+		-1,
+		&textRect,
+		DT_CENTER | DT_VCENTER | DT_SINGLELINE
+	);
+
+	DeleteObject(backgroundBrush);
+}
+
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	_In_opt_ HINSTANCE hPrevInstance,
 	_In_ LPWSTR    lpCmdLine,
