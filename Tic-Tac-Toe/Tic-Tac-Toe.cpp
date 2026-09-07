@@ -165,6 +165,266 @@ void DrawMenuButton(
 	DeleteObject(backgroundBrush);
 }
 
+void DrawMenu(HDC hdc, int windowWidth)
+{
+	MenuLayout layout = GetMenuLayout(windowWidth);
+
+	SetBkMode(hdc, TRANSPARENT);
+
+	// ==============================
+	// Titre
+	// ==============================
+
+	HFONT titleFont = CreateFontW(
+		42,
+		0,
+		0,
+		0,
+		FW_BOLD,
+		FALSE,
+		FALSE,
+		FALSE,
+		DEFAULT_CHARSET,
+		OUT_DEFAULT_PRECIS,
+		CLIP_DEFAULT_PRECIS,
+		CLEARTYPE_QUALITY,
+		DEFAULT_PITCH | FF_DONTCARE,
+		L"Segoe UI"
+	);
+
+	HFONT oldFont = (HFONT)SelectObject(hdc, titleFont);
+
+	SetTextColor(hdc, RGB(30, 30, 30));
+
+	RECT titleRect = {
+		0,
+		40,
+		windowWidth,
+		100
+	};
+
+	DrawTextW(
+		hdc,
+		L"TIC TAC TOE",
+		-1,
+		&titleRect,
+		DT_CENTER | DT_VCENTER | DT_SINGLELINE
+	);
+
+	SelectObject(hdc, oldFont);
+	DeleteObject(titleFont);
+
+	// ==============================
+	// Police normale
+	// ==============================
+
+	HFONT menuFont = CreateFontW(
+		22,
+		0,
+		0,
+		0,
+		FW_BOLD,
+		FALSE,
+		FALSE,
+		FALSE,
+		DEFAULT_CHARSET,
+		OUT_DEFAULT_PRECIS,
+		CLIP_DEFAULT_PRECIS,
+		CLEARTYPE_QUALITY,
+		DEFAULT_PITCH | FF_DONTCARE,
+		L"Segoe UI"
+	);
+
+	oldFont = (HFONT)SelectObject(hdc, menuFont);
+
+	int center = windowWidth / 2;
+
+	// ==============================
+	// Joueur 1
+	// ==============================
+
+	RECT j1Title = {
+		center - 300,
+		115,
+		center - 40,
+		160
+	};
+
+	SetTextColor(hdc, RGB(220, 40, 40));
+
+	DrawTextW(
+		hdc,
+		L"Joueur 1 - X",
+		-1,
+		&j1Title,
+		DT_CENTER | DT_VCENTER | DT_SINGLELINE
+	);
+
+	DrawMenuButton(
+		hdc,
+		layout.j1Human,
+		L"Humain",
+		player1Type == PlayerType::Human,
+		RGB(220, 40, 40)
+	);
+
+	DrawMenuButton(
+		hdc,
+		layout.j1Bot,
+		L"Bot",
+		player1Type == PlayerType::Bot,
+		RGB(220, 40, 40)
+	);
+
+	// ==============================
+	// Joueur 2
+	// ==============================
+
+	RECT j2Title = {
+		center + 20,
+		115,
+		center + 280,
+		160
+	};
+
+	SetTextColor(hdc, RGB(40, 100, 220));
+
+	DrawTextW(
+		hdc,
+		L"Joueur 2 - O",
+		-1,
+		&j2Title,
+		DT_CENTER | DT_VCENTER | DT_SINGLELINE
+	);
+
+	DrawMenuButton(
+		hdc,
+		layout.j2Human,
+		L"Humain",
+		player2Type == PlayerType::Human,
+		RGB(40, 100, 220)
+	);
+
+	DrawMenuButton(
+		hdc,
+		layout.j2Bot,
+		L"Bot",
+		player2Type == PlayerType::Bot,
+		RGB(40, 100, 220)
+	);
+
+	// ==============================
+	// Difficulté joueur 1
+	// ==============================
+
+	if (player1Type == PlayerType::Bot)
+	{
+		RECT difficultyTitle = {
+			center - 300,
+			240,
+			center - 40,
+			280
+		};
+
+		SetTextColor(hdc, RGB(60, 60, 60));
+
+		DrawTextW(
+			hdc,
+			L"Difficulté",
+			-1,
+			&difficultyTitle,
+			DT_CENTER | DT_VCENTER | DT_SINGLELINE
+		);
+
+		DrawMenuButton(
+			hdc,
+			layout.j1Easy,
+			L"Facile",
+			player1Difficulty == BotDifficulty::Easy,
+			RGB(220, 40, 40)
+		);
+
+		DrawMenuButton(
+			hdc,
+			layout.j1Medium,
+			L"Moyen",
+			player1Difficulty == BotDifficulty::Medium,
+			RGB(220, 40, 40)
+		);
+
+		DrawMenuButton(
+			hdc,
+			layout.j1Hard,
+			L"Difficile",
+			player1Difficulty == BotDifficulty::Hard,
+			RGB(220, 40, 40)
+		);
+	}
+
+	// ==============================
+	// Difficulté joueur 2
+	// ==============================
+
+	if (player2Type == PlayerType::Bot)
+	{
+		RECT difficultyTitle = {
+			center + 20,
+			240,
+			center + 280,
+			280
+		};
+
+		SetTextColor(hdc, RGB(60, 60, 60));
+
+		DrawTextW(
+			hdc,
+			L"Difficulté",
+			-1,
+			&difficultyTitle,
+			DT_CENTER | DT_VCENTER | DT_SINGLELINE
+		);
+
+		DrawMenuButton(
+			hdc,
+			layout.j2Easy,
+			L"Facile",
+			player2Difficulty == BotDifficulty::Easy,
+			RGB(40, 100, 220)
+		);
+
+		DrawMenuButton(
+			hdc,
+			layout.j2Medium,
+			L"Moyen",
+			player2Difficulty == BotDifficulty::Medium,
+			RGB(40, 100, 220)
+		);
+
+		DrawMenuButton(
+			hdc,
+			layout.j2Hard,
+			L"Difficile",
+			player2Difficulty == BotDifficulty::Hard,
+			RGB(40, 100, 220)
+		);
+	}
+
+	// ==============================
+	// Jouer
+	// ==============================
+
+	DrawMenuButton(
+		hdc,
+		layout.startButton,
+		L"JOUER",
+		true,
+		RGB(50, 150, 70)
+	);
+
+	SelectObject(hdc, oldFont);
+	DeleteObject(menuFont);
+}
+
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	_In_opt_ HINSTANCE hPrevInstance,
 	_In_ LPWSTR    lpCmdLine,
