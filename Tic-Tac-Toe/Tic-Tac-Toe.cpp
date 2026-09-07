@@ -628,6 +628,14 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		int windowWidth = clientRect.right - clientRect.left;
 		int windowHeight = clientRect.bottom - clientRect.top;
 
+		if (currentScreen == Screen::Menu)
+		{
+			DrawMenu(hdc, windowWidth);
+
+			EndPaint(hWnd, &ps);
+			return 0;
+		}
+
 		// Position du plateau pour le centrer
 		int boardX = (windowWidth - BOARD_SIZE) / 2;
 		int boardY = (windowHeight - BOARD_SIZE) / 2;
