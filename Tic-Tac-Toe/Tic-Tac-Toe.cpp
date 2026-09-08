@@ -83,6 +83,14 @@ struct MenuLayout
 
 int CheckWinner();
 
+void ResetGame()
+{
+	ZeroMemory(board, sizeof(board));
+
+	currentPlayer = 1;
+	winner = 0;
+}
+
 MenuLayout GetMenuLayout(int windowWidth)
 {
 	MenuLayout layout{};
