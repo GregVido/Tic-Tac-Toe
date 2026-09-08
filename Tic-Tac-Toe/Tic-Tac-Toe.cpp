@@ -953,10 +953,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				currentScreen = Screen::Game;
 
 				// Nouvelle partie
-				ZeroMemory(board, sizeof(board));
-
-				currentPlayer = 1;
-				winner = 0;
+				ResetGame();
 			}
 
 			InvalidateRect(hWnd, nullptr, TRUE);
