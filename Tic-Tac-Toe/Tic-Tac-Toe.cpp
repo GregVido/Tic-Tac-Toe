@@ -137,6 +137,34 @@ MenuLayout GetMenuLayout(int windowWidth)
 	return layout;
 }
 
+EndGameLayout GetEndGameLayout(int windowWidth, int boardY)
+{
+	EndGameLayout layout{};
+
+	int center = windowWidth / 2;
+
+	int buttonWidth = 220;
+	int buttonHeight = 45;
+
+	int y = boardY + BOARD_SIZE + 20;
+
+	layout.restartButton = {
+		center - buttonWidth - 10,
+		y,
+		center - 10,
+		y + buttonHeight
+	};
+
+	layout.changePlayersButton = {
+		center + 10,
+		y,
+		center + buttonWidth + 10,
+		y + buttonHeight
+	};
+
+	return layout;
+}
+
 void DrawMenuButton(
 	HDC hdc,
 	const RECT& rect,
