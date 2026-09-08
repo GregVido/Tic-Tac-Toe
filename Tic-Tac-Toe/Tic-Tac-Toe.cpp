@@ -81,6 +81,12 @@ struct MenuLayout
 	RECT startButton;
 };
 
+struct EndGameLayout
+{
+	RECT restartButton;
+	RECT changePlayersButton;
+};
+
 int CheckWinner();
 
 void ResetGame()
