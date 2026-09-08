@@ -1057,6 +1057,45 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		int boardX = (windowWidth - BOARD_SIZE) / 2;
 		int boardY = (windowHeight - BOARD_SIZE) / 2;
 
+		// ==============================
+		// Clic sur les boutons de fin
+		// ==============================
+
+		if (winner != 0)
+		{
+			EndGameLayout endLayout = GetEndGameLayout(
+				windowWidth,
+				boardY
+			);
+
+			POINT mousePoint = {
+				mouseX,
+				mouseY
+			};
+
+			// Rejouer avec les mêmes joueurs
+			if (PtInRect(&endLayout.restartButton, mousePoint))
+			{
+				ResetGame();
+
+				InvalidateRect(hWnd, nullptr, TRUE);
+
+				return 0;
+			}
+
+			// Retourner au menu de sélection
+			if (PtInRect(&endLayout.changePlayersButton, mousePoint))
+			{
+				ResetGame();
+
+				currentScreen = Screen::Menu;
+
+				InvalidateRect(hWnd, nullptr, TRUE);
+
+				return 0;
+			}
+		}
+
 		// Vérifie si on a cliqué à l'intérieur du plateau
 		if (mouseX >= boardX &&
 			mouseX < boardX + BOARD_SIZE &&
