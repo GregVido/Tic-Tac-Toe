@@ -889,6 +889,57 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		DeleteObject(redPen);
 		DeleteObject(bluePen);
 
+		// ==============================
+		// Boutons de fin de partie
+		// ==============================
+
+		if (winner != 0)
+		{
+			EndGameLayout endLayout = GetEndGameLayout(
+				windowWidth,
+				boardY
+			);
+
+			HFONT buttonFont = CreateFontW(
+				20,
+				0,
+				0,
+				0,
+				FW_BOLD,
+				FALSE,
+				FALSE,
+				FALSE,
+				DEFAULT_CHARSET,
+				OUT_DEFAULT_PRECIS,
+				CLIP_DEFAULT_PRECIS,
+				CLEARTYPE_QUALITY,
+				DEFAULT_PITCH | FF_DONTCARE,
+				L"Segoe UI"
+			);
+
+			HFONT oldButtonFont =
+				(HFONT)SelectObject(hdc, buttonFont);
+
+			DrawMenuButton(
+				hdc,
+				endLayout.restartButton,
+				L"RECOMMENCER",
+				true,
+				RGB(50, 150, 70)
+			);
+
+			DrawMenuButton(
+				hdc,
+				endLayout.changePlayersButton,
+				L"CHANGER LES JOUEURS",
+				true,
+				RGB(80, 80, 80)
+			);
+
+			SelectObject(hdc, oldButtonFont);
+			DeleteObject(buttonFont);
+		}
+
 		EndPaint(hWnd, &ps);
 	}
 	break;
