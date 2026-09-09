@@ -7,14 +7,7 @@
 #include "Game.h"
 #include "Menu.h"
 
-#include <random>
-
 #define MAX_LOADSTRING 100
-
-// Générateur aléatoire
-std::random_device rd;
-std::mt19937 randomGenerator(rd());
-std::uniform_int_distribution<int> randomSymbol(1, 2);
 
 // Variables globales :
 HINSTANCE hInst;                                // instance actuelle

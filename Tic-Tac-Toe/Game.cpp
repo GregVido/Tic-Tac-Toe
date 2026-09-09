@@ -1,5 +1,11 @@
 #include "Game.h"
 
+#include <random>
+
+std::random_device rd;
+std::mt19937 randomGenerator(rd());
+std::uniform_int_distribution<int> randomPlayer(1, 2);
+
 Screen currentScreen = Screen::Menu;
 
 PlayerType player1Type = PlayerType::Human;
@@ -23,7 +29,9 @@ void ResetGame()
 		}
 	}
 
-	currentPlayer = 1;
+	// Joueur qui commence choisi aléatoirement
+	currentPlayer = randomPlayer(randomGenerator);
+
 	winner = 0;
 }
 
