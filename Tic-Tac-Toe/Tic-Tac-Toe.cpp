@@ -1035,10 +1035,29 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 			else if (PtInRect(&layout.startButton, mousePoint))
 			{
+				// Vérifie si au moins un joueur est un bot
+				if (player1Type == PlayerType::Bot ||
+					player2Type == PlayerType::Bot)
+				{
+					MessageBoxW(
+						hWnd,
+						L"Le mode IA est actuellement en cours de développement.\n\n"
+						L"Pour le moment, veuillez sélectionner deux joueurs humains.",
+						L"Fonctionnalité en développement",
+						MB_OK | MB_ICONINFORMATION
+					);
+
+					return 0;
+				}
+
+				// Lance la partie uniquement si les deux joueurs sont humains
 				currentScreen = Screen::Game;
 
-				// Nouvelle partie
 				ResetGame();
+
+				InvalidateRect(hWnd, nullptr, TRUE);
+
+				return 0;
 			}
 
 			InvalidateRect(hWnd, nullptr, TRUE);
