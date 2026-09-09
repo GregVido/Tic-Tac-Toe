@@ -545,16 +545,33 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
 //
 BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 {
-	hInst = hInstance; // Stocke le handle d'instance dans la variable globale
+	hInst = hInstance;
+
+	const int windowWidth = 700;
+	const int windowHeight = 700;
+
+	// Taille de l'écran
+	int screenWidth = GetSystemMetrics(SM_CXSCREEN);
+	int screenHeight = GetSystemMetrics(SM_CYSCREEN);
+
+	// Position pour centrer la fenêtre
+	int windowX = (screenWidth - windowWidth) / 2;
+	int windowY = (screenHeight - windowHeight) / 2;
+
+	DWORD windowStyle =
+		WS_OVERLAPPED |
+		WS_CAPTION |
+		WS_SYSMENU |
+		WS_MINIMIZEBOX;
 
 	HWND hWnd = CreateWindowW(
 		szWindowClass,
 		szTitle,
-		WS_OVERLAPPEDWINDOW,
-		CW_USEDEFAULT,
-		CW_USEDEFAULT,
-		700,
-		700,
+		windowStyle,
+		windowX,
+		windowY,
+		windowWidth,
+		windowHeight,
 		nullptr,
 		nullptr,
 		hInstance,
