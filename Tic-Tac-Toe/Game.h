@@ -41,3 +41,5 @@ extern int board[3][3];
 // Fonctions
 void ResetGame();
 int CheckWinner();
+bool IsCurrentPlayerBot();
+void PlayEasyBotMove();
