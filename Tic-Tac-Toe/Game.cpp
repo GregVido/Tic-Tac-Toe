@@ -104,3 +104,49 @@ bool IsCurrentPlayerBot()
 		return player2Type == PlayerType::Bot;
 	}
 }
+
+void PlayEasyBotMove()
+{
+	if (winner != 0)
+		return;
+
+	std::vector<std::pair<int, int>> emptyCells;
+
+	// Cherche toutes les cases libres
+	for (int row = 0; row < 3; row++)
+	{
+		for (int column = 0; column < 3; column++)
+		{
+			if (board[row][column] == 0)
+			{
+				emptyCells.push_back({ row, column });
+			}
+		}
+	}
+
+	if (emptyCells.empty())
+		return;
+
+	// Choisit une case libre au hasard
+	std::uniform_int_distribution<int> distribution(
+		0,
+		static_cast<int>(emptyCells.size()) - 1
+	);
+
+	int index = distribution(randomGenerator);
+
+	int row = emptyCells[index].first;
+	int column = emptyCells[index].second;
+
+	// Joue
+	board[row][column] = currentPlayer;
+
+	// Vérifie la victoire
+	winner = CheckWinner();
+
+	// Change de joueur
+	if (winner == 0)
+	{
+		currentPlayer = (currentPlayer == 1) ? 2 : 1;
+	}
+}
