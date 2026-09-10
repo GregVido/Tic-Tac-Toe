@@ -1,6 +1,8 @@
 #include "Game.h"
 
 #include <random>
+#include <vector>
+#include <utility>
 
 std::random_device rd;
 std::mt19937 randomGenerator(rd());
@@ -89,4 +91,16 @@ int CheckWinner()
 
 	// Match nul
 	return 3;
+}
+
+bool IsCurrentPlayerBot()
+{
+	if (currentPlayer == 1)
+	{
+		return player1Type == PlayerType::Bot;
+	}
+	else
+	{
+		return player2Type == PlayerType::Bot;
+	}
 }
