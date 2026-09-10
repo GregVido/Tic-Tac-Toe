@@ -570,6 +570,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 				ResetGame();
 
+				// Si le joueur tiré au sort est un bot
+				if (IsCurrentPlayerBot())
+				{
+					PlayEasyBotMove();
+				}
+
 				InvalidateRect(hWnd, nullptr, TRUE);
 
 				return 0;
@@ -653,6 +659,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				if (winner == 0)
 				{
 					currentPlayer = (currentPlayer == 1) ? 2 : 1;
+				}
+
+				// Coup du bot
+				if (winner == 0 && IsCurrentPlayerBot())
+				{
+					PlayEasyBotMove();
 				}
 
 				InvalidateRect(hWnd, nullptr, TRUE);
