@@ -550,14 +550,24 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 			else if (PtInRect(&layout.startButton, mousePoint))
 			{
-				// Vérifie si au moins un joueur est un bot
-				if (player1Type == PlayerType::Bot ||
-					player2Type == PlayerType::Bot)
+				// Vérifie si J1 utilise un bot pas encore disponible
+				bool player1BotUnavailable =
+					player1Type == PlayerType::Bot &&
+					player1Difficulty != BotDifficulty::Easy;
+
+				// Vérifie si J2 utilise un bot pas encore disponible
+				bool player2BotUnavailable =
+					player2Type == PlayerType::Bot &&
+					player2Difficulty != BotDifficulty::Easy;
+
+				// Moyen / Difficile encore indisponibles
+				if (player1BotUnavailable || player2BotUnavailable)
 				{
 					MessageBoxW(
 						hWnd,
-						L"Le mode IA est actuellement en cours de développement.\n\n"
-						L"Pour le moment, veuillez sélectionner deux joueurs humains.",
+						L"Les bots Moyen et Difficile sont actuellement "
+						L"en cours de développement.\n\n"
+						L"Le bot Facile est disponible.",
 						L"Fonctionnalité en développement",
 						MB_OK | MB_ICONINFORMATION
 					);
@@ -565,12 +575,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 					return 0;
 				}
 
-				// Lance la partie uniquement si les deux joueurs sont humains
+				// Lance la partie
 				currentScreen = Screen::Game;
 
 				ResetGame();
 
-				// Si le joueur tiré au sort est un bot
+				// Si le joueur tiré au sort est un bot facile,
+				// il joue immédiatement
 				if (IsCurrentPlayerBot())
 				{
 					PlayEasyBotMove();
