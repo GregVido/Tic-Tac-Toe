@@ -1,4 +1,5 @@
 #include "Game.h"
+#include "MCTS.h"
 
 #include <random>
 #include <vector>
@@ -148,5 +149,31 @@ void PlayEasyBotMove()
 	if (winner == 0)
 	{
 		currentPlayer = (currentPlayer == 1) ? 2 : 1;
+	}
+}
+
+void PlayMediumBotMove()
+{
+	if (winner != 0)
+		return;
+
+	// 200 simulations = niveau moyen
+	auto [row, column] = FindMCTSMove(
+		board,
+		currentPlayer,
+		200
+	);
+
+	if (row < 0 || column < 0)
+		return;
+
+	board[row][column] = currentPlayer;
+
+	winner = CheckWinner();
+
+	if (winner == 0)
+	{
+		currentPlayer =
+			(currentPlayer == 1) ? 2 : 1;
 	}
 }
