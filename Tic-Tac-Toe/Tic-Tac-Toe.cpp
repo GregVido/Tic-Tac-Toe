@@ -551,23 +551,23 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			else if (PtInRect(&layout.startButton, mousePoint))
 			{
 				// Vérifie si J1 utilise un bot pas encore disponible
-				bool player1BotUnavailable =
+				bool player1Unavailable =
 					player1Type == PlayerType::Bot &&
-					player1Difficulty != BotDifficulty::Easy;
+					player1Difficulty == BotDifficulty::Hard;
 
 				// Vérifie si J2 utilise un bot pas encore disponible
-				bool player2BotUnavailable =
+				bool player2Unavailable =
 					player2Type == PlayerType::Bot &&
-					player2Difficulty != BotDifficulty::Easy;
+					player2Difficulty == BotDifficulty::Hard;
 
 				// Moyen / Difficile encore indisponibles
-				if (player1BotUnavailable || player2BotUnavailable)
+				if (player1Unavailable || player2Unavailable)
 				{
 					MessageBoxW(
 						hWnd,
-						L"Les bots Moyen et Difficile sont actuellement "
+						L"Le bot Difficile est actuellement "
 						L"en cours de développement.\n\n"
-						L"Le bot Facile est disponible.",
+						L"Les modes Facile et Moyen sont disponibles.",
 						L"Fonctionnalité en développement",
 						MB_OK | MB_ICONINFORMATION
 					);
@@ -584,7 +584,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				// il joue immédiatement
 				if (IsCurrentPlayerBot())
 				{
-					PlayEasyBotMove();
+					PlayBotMove();
 				}
 
 				InvalidateRect(hWnd, nullptr, TRUE);
@@ -675,7 +675,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				// Coup du bot
 				if (winner == 0 && IsCurrentPlayerBot())
 				{
-					PlayEasyBotMove();
+					PlayBotMove();
 				}
 
 				InvalidateRect(hWnd, nullptr, TRUE);
