@@ -141,6 +141,7 @@
   <ItemGroup>
     <ClInclude Include="framework.h" />
     <ClInclude Include="Game.h" />
+    <ClInclude Include="MCTS.h" />
     <ClInclude Include="Menu.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="targetver.h" />
@@ -148,6 +149,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Game.cpp" />
+    <ClCompile Include="MCTS.cpp" />
     <ClCompile Include="Menu.cpp" />
     <ClCompile Include="Tic-Tac-Toe.cpp" />
   </ItemGroup>
