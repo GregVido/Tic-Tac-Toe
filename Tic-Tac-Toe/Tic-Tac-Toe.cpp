@@ -8,6 +8,7 @@
 #include "Menu.h"
 
 #define MAX_LOADSTRING 100
+#define TIMER_BOT 1
 
 // Variables globales :
 HINSTANCE hInst;                                // instance actuelle
@@ -19,6 +20,21 @@ ATOM                MyRegisterClass(HINSTANCE hInstance);
 BOOL                InitInstance(HINSTANCE, int);
 LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
+
+void StartBotTurn(HWND hWnd)
+{
+	if (currentScreen == Screen::Game &&
+		winner == 0 &&
+		IsCurrentPlayerBot())
+	{
+		SetTimer(
+			hWnd,
+			TIMER_BOT,
+			400,        // 400 ms avant le coup
+			nullptr
+		);
+	}
+}
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	_In_opt_ HINSTANCE hPrevInstance,
@@ -173,6 +189,34 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		}
 	}
 	break;
+	case WM_TIMER:
+	{
+		if (wParam == TIMER_BOT)
+		{
+			// Ce timer ne doit jouer qu'un seul coup
+			KillTimer(hWnd, TIMER_BOT);
+
+			if (currentScreen == Screen::Game &&
+				winner == 0 &&
+				IsCurrentPlayerBot())
+			{
+				PlayBotMove();
+
+				// Affiche le nouveau coup
+				InvalidateRect(hWnd, nullptr, TRUE);
+				UpdateWindow(hWnd);
+
+				// Si le joueur suivant est également un bot,
+				// programme son coup
+				if (winner == 0 && IsCurrentPlayerBot())
+				{
+					StartBotTurn(hWnd);
+				}
+			}
+		}
+
+		break;
+	}
 	case WM_PAINT:
 	{
 		PAINTSTRUCT ps;
@@ -580,14 +624,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 				ResetGame();
 
-				// Si le joueur tiré au sort est un bot facile,
-				// il joue immédiatement
-				if (IsCurrentPlayerBot())
-				{
-					PlayBotMove();
-				}
-
 				InvalidateRect(hWnd, nullptr, TRUE);
+
+				// Si le premier joueur est un bot,
+				// programme son coup
+				StartBotTurn(hWnd);
 
 				return 0;
 			}
@@ -631,6 +672,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 				InvalidateRect(hWnd, nullptr, TRUE);
 
+				StartBotTurn(hWnd);
+
 				return 0;
 			}
 
@@ -639,6 +682,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			{
 				ResetGame();
 
+				KillTimer(hWnd, TIMER_BOT);
 				currentScreen = Screen::Menu;
 
 				InvalidateRect(hWnd, nullptr, TRUE);
@@ -673,12 +717,14 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				}
 
 				// Coup du bot
+				InvalidateRect(hWnd, nullptr, TRUE);
+
+				// Si le prochain joueur est un bot,
+				// son coup sera joué après un petit délai
 				if (winner == 0 && IsCurrentPlayerBot())
 				{
-					PlayBotMove();
+					StartBotTurn(hWnd);
 				}
-
-				InvalidateRect(hWnd, nullptr, TRUE);
 			}
 		}
 
@@ -712,5 +758,6 @@ INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 		}
 		break;
 	}
+
 	return (INT_PTR)FALSE;
 }
