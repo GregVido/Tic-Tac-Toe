@@ -177,3 +177,38 @@ void PlayMediumBotMove()
 			(currentPlayer == 1) ? 2 : 1;
 	}
 }
+
+void PlayBotMove()
+{
+	if (winner != 0)
+		return;
+
+	if (!IsCurrentPlayerBot())
+		return;
+
+	BotDifficulty difficulty;
+
+	if (currentPlayer == 1)
+	{
+		difficulty = player1Difficulty;
+	}
+	else
+	{
+		difficulty = player2Difficulty;
+	}
+
+	switch (difficulty)
+	{
+	case BotDifficulty::Easy:
+		PlayEasyBotMove();
+		break;
+
+	case BotDifficulty::Medium:
+		PlayMediumBotMove();
+		break;
+
+	case BotDifficulty::Hard:
+		// Pas encore implémenté
+		break;
+	}
+}
