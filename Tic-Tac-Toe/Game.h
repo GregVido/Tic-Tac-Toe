@@ -43,3 +43,5 @@ void ResetGame();
 int CheckWinner();
 bool IsCurrentPlayerBot();
 void PlayEasyBotMove();
+void PlayMediumBotMove();
+void PlayBotMove();
