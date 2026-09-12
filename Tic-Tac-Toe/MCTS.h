@@ -7,5 +7,5 @@
 std::pair<int, int> FindMCTSMove(
 	const int board[3][3],
 	int aiPlayer,
-	int iterations = 200
+	int iterations = 2
 );
