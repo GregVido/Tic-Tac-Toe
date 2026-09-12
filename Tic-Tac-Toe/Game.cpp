@@ -161,7 +161,7 @@ void PlayMediumBotMove()
 	auto [row, column] = FindMCTSMove(
 		board,
 		currentPlayer,
-		200
+		2
 	);
 
 	if (row < 0 || column < 0)
