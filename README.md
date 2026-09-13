@@ -4,7 +4,7 @@
             <i>TODO...</i>
         </td>
         <td width="700" align="center">
-            <h1>IA Puissance 4</h1>
+            <h3 style="font-size: 30px">IA Puissance 4</h3>
         </td>
     </td>
 </table>
