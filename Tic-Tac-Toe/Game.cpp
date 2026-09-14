@@ -1,5 +1,6 @@
 #include "Game.h"
 #include "MCTS.h"
+#include "MinimaxAI.h"
 
 #include <random>
 #include <vector>
