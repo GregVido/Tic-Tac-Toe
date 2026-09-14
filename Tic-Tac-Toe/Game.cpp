@@ -178,6 +178,30 @@ void PlayMediumBotMove()
 	}
 }
 
+void PlayHardBotMove()
+{
+	if (winner != 0)
+		return;
+
+	auto [row, column] = FindBestMinimaxMove(
+		board,
+		currentPlayer
+	);
+
+	if (row < 0 || column < 0)
+		return;
+
+	board[row][column] = currentPlayer;
+
+	winner = CheckWinner();
+
+	if (winner == 0)
+	{
+		currentPlayer =
+			(currentPlayer == 1) ? 2 : 1;
+	}
+}
+
 void PlayBotMove()
 {
 	if (winner != 0)
@@ -208,31 +232,7 @@ void PlayBotMove()
 		break;
 
 	case BotDifficulty::Hard:
-		// Pas encore implémenté
+		PlayHardBotMove();
 		break;
-	}
-}
-
-void PlayHardBotMove()
-{
-	if (winner != 0)
-		return;
-
-	auto [row, column] = FindBestMinimaxMove(
-		board,
-		currentPlayer
-	);
-
-	if (row < 0 || column < 0)
-		return;
-
-	board[row][column] = currentPlayer;
-
-	winner = CheckWinner();
-
-	if (winner == 0)
-	{
-		currentPlayer =
-			(currentPlayer == 1) ? 2 : 1;
 	}
 }
