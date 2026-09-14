@@ -212,3 +212,27 @@ void PlayBotMove()
 		break;
 	}
 }
+
+void PlayHardBotMove()
+{
+	if (winner != 0)
+		return;
+
+	auto [row, column] = FindBestMinimaxMove(
+		board,
+		currentPlayer
+	);
+
+	if (row < 0 || column < 0)
+		return;
+
+	board[row][column] = currentPlayer;
+
+	winner = CheckWinner();
+
+	if (winner == 0)
+	{
+		currentPlayer =
+			(currentPlayer == 1) ? 2 : 1;
+	}
+}
