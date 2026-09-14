@@ -45,3 +45,4 @@ bool IsCurrentPlayerBot();
 void PlayEasyBotMove();
 void PlayMediumBotMove();
 void PlayBotMove();
+void PlayHardBotMove();
