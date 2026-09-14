@@ -594,30 +594,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 			else if (PtInRect(&layout.startButton, mousePoint))
 			{
-				// Vérifie si J1 utilise un bot pas encore disponible
-				bool player1Unavailable =
-					player1Type == PlayerType::Bot &&
-					player1Difficulty == BotDifficulty::Hard;
-
-				// Vérifie si J2 utilise un bot pas encore disponible
-				bool player2Unavailable =
-					player2Type == PlayerType::Bot &&
-					player2Difficulty == BotDifficulty::Hard;
-
-				// Moyen / Difficile encore indisponibles
-				if (player1Unavailable || player2Unavailable)
-				{
-					MessageBoxW(
-						hWnd,
-						L"Le bot Difficile est actuellement "
-						L"en cours de développement.\n\n"
-						L"Les modes Facile et Moyen sont disponibles.",
-						L"Fonctionnalité en développement",
-						MB_OK | MB_ICONINFORMATION
-					);
-
-					return 0;
-				}
 
 				// Lance la partie
 				currentScreen = Screen::Game;
