@@ -173,8 +173,7 @@ void PlayMediumBotMove()
 
 	if (winner == 0)
 	{
-		currentPlayer =
-			(currentPlayer == 1) ? 2 : 1;
+		currentPlayer = (currentPlayer == 1) ? 2 : 1;
 	}
 }
 
