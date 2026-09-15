@@ -39,6 +39,9 @@
     <ClInclude Include="MinimaxAI.h">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\Downloads\modern_ui_tictactoe\modern_ui\UI.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Tic-Tac-Toe.cpp">
