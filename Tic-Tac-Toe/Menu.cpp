@@ -1,42 +1,212 @@
 #include "Menu.h"
 #include "Game.h"
+#include "UI.h"
+
+#include <algorithm>
+
+namespace
+{
+	MenuHoverTarget gHover = MenuHoverTarget::None;
+	float gIntro = 0.0f;
+
+	float Clamp01(float value)
+	{
+		return std::clamp(value, 0.0f, 1.0f);
+	}
+
+	float EaseOutCubic(float t)
+	{
+		t = Clamp01(t);
+		float p = 1.0f - t;
+		return 1.0f - p * p * p;
+	}
+
+	RECT OffsetAnimated(const RECT& rect, float delay)
+	{
+		float local = Clamp01((gIntro - delay) / (1.0f - delay));
+		int offsetY = static_cast<int>((1.0f - EaseOutCubic(local)) * 28.0f);
+		RECT result = rect;
+		OffsetRect(&result, 0, offsetY);
+		return result;
+	}
+
+	bool IsHovered(MenuHoverTarget target)
+	{
+		return gHover == target;
+	}
+
+	const wchar_t* DifficultyDescription(BotDifficulty difficulty)
+	{
+		switch (difficulty)
+		{
+		case BotDifficulty::Easy:
+			return L"Coup aleatoire - rapide et imprevisible";
+		case BotDifficulty::Medium:
+			return L"MCTS - simule plusieurs parties avant de jouer";
+		case BotDifficulty::Hard:
+			return L"Minimax + alpha-beta - jeu optimal";
+		default:
+			return L"";
+		}
+	}
+
+	void DrawPlayerCard(
+		HDC hdc,
+		RECT card,
+		bool playerOne,
+		const MenuLayout& layout,
+		float delay)
+	{
+		card = OffsetAnimated(card, delay);
+
+		const COLORREF accent = playerOne ? UI::Red : UI::Blue;
+		const PlayerType type = playerOne ? player1Type : player2Type;
+		const BotDifficulty difficulty = playerOne ? player1Difficulty : player2Difficulty;
+
+		UI::DrawShadow(hdc, card, 24, 8);
+		UI::DrawRoundedPanel(hdc, card, 24, UI::Surface, UI::Border, 1);
+
+		RECT badge = { card.left + 24, card.top + 22, card.left + 78, card.top + 76 };
+		UI::DrawRoundedPanel(hdc, badge, 18, UI::MixColor(accent, UI::Surface, 0.70f), accent, 1);
+
+		HFONT symbolFont = UI::CreateUiFont(28, FW_BOLD, L"Segoe UI Variable Display");
+		UI::DrawCenteredText(hdc, badge, playerOne ? L"X" : L"O", symbolFont, accent);
+		DeleteObject(symbolFont);
+
+		RECT titleRect = { card.left + 94, card.top + 18, card.right - 20, card.top + 50 };
+		HFONT titleFont = UI::CreateUiFont(20, FW_BOLD, L"Segoe UI Variable Display");
+		UI::DrawCenteredText(
+			hdc,
+			titleRect,
+			playerOne ? L"Joueur 1" : L"Joueur 2",
+			titleFont,
+			UI::Text,
+			DT_LEFT | DT_VCENTER | DT_SINGLELINE
+		);
+		DeleteObject(titleFont);
+
+		RECT subtitleRect = { card.left + 94, card.top + 49, card.right - 20, card.top + 74 };
+		HFONT subtitleFont = UI::CreateUiFont(13, FW_NORMAL);
+		UI::DrawCenteredText(
+			hdc,
+			subtitleRect,
+			playerOne ? L"Croix rouge" : L"Cercle bleu",
+			subtitleFont,
+			UI::Muted,
+			DT_LEFT | DT_VCENTER | DT_SINGLELINE
+		);
+		DeleteObject(subtitleFont);
+
+		RECT sectionLabel = { card.left + 24, card.top + 96, card.right - 24, card.top + 122 };
+		HFONT labelFont = UI::CreateUiFont(12, FW_SEMIBOLD);
+		UI::DrawCenteredText(hdc, sectionLabel, L"TYPE DE JOUEUR", labelFont, UI::Muted, DT_LEFT | DT_VCENTER | DT_SINGLELINE);
+		DeleteObject(labelFont);
+
+		RECT humanRect = playerOne ? layout.j1Human : layout.j2Human;
+		RECT botRect = playerOne ? layout.j1Bot : layout.j2Bot;
+		humanRect = OffsetAnimated(humanRect, delay);
+		botRect = OffsetAnimated(botRect, delay);
+
+		DrawMenuButton(
+			hdc,
+			humanRect,
+			L"HUMAIN",
+			type == PlayerType::Human,
+			accent,
+			IsHovered(playerOne ? MenuHoverTarget::J1Human : MenuHoverTarget::J2Human)
+		);
+
+		DrawMenuButton(
+			hdc,
+			botRect,
+			L"BOT",
+			type == PlayerType::Bot,
+			accent,
+			IsHovered(playerOne ? MenuHoverTarget::J1Bot : MenuHoverTarget::J2Bot)
+		);
+
+		RECT difficultyLabel = { card.left + 24, card.top + 182, card.right - 24, card.top + 208 };
+		HFONT difficultyFont = UI::CreateUiFont(12, FW_SEMIBOLD);
+		UI::DrawCenteredText(
+			hdc,
+			difficultyLabel,
+			type == PlayerType::Bot ? L"DIFFICULTE" : L"MODE",
+			difficultyFont,
+			UI::Muted,
+			DT_LEFT | DT_VCENTER | DT_SINGLELINE
+		);
+		DeleteObject(difficultyFont);
+
+		if (type == PlayerType::Bot)
+		{
+			RECT easy = playerOne ? layout.j1Easy : layout.j2Easy;
+			RECT medium = playerOne ? layout.j1Medium : layout.j2Medium;
+			RECT hard = playerOne ? layout.j1Hard : layout.j2Hard;
+
+			easy = OffsetAnimated(easy, delay);
+			medium = OffsetAnimated(medium, delay);
+			hard = OffsetAnimated(hard, delay);
+
+			DrawMenuButton(hdc, easy, L"FACILE", difficulty == BotDifficulty::Easy, accent,
+				IsHovered(playerOne ? MenuHoverTarget::J1Easy : MenuHoverTarget::J2Easy));
+			DrawMenuButton(hdc, medium, L"MOYEN", difficulty == BotDifficulty::Medium, accent,
+				IsHovered(playerOne ? MenuHoverTarget::J1Medium : MenuHoverTarget::J2Medium));
+			DrawMenuButton(hdc, hard, L"DIFFICILE", difficulty == BotDifficulty::Hard, accent,
+				IsHovered(playerOne ? MenuHoverTarget::J1Hard : MenuHoverTarget::J2Hard));
+
+			RECT infoRect = { card.left + 24, card.bottom - 48, card.right - 24, card.bottom - 18 };
+			HFONT infoFont = UI::CreateUiFont(11, FW_NORMAL);
+			UI::DrawCenteredText(hdc, infoRect, DifficultyDescription(difficulty), infoFont, UI::Muted,
+				DT_LEFT | DT_VCENTER | DT_SINGLELINE | DT_END_ELLIPSIS);
+			DeleteObject(infoFont);
+		}
+		else
+		{
+			RECT localRect = { card.left + 24, card.top + 216, card.right - 24, card.top + 266 };
+			UI::DrawRoundedPanel(hdc, localRect, 14, UI::MixColor(UI::SurfaceStrong, accent, 0.08f), UI::Border, 1);
+
+			HFONT infoFont = UI::CreateUiFont(13, FW_NORMAL);
+			UI::DrawCenteredText(hdc, localRect, L"Controle local au clavier / a la souris", infoFont, UI::Muted);
+			DeleteObject(infoFont);
+		}
+	}
+}
 
 MenuLayout GetMenuLayout(int windowWidth)
 {
 	MenuLayout layout{};
 
-	int center = windowWidth / 2;
+	const int center = windowWidth / 2;
+	const int cardWidth = 330;
+	const int gap = 24;
+	const int leftX = center - gap / 2 - cardWidth;
+	const int rightX = center + gap / 2;
 
-	// Panneau joueur 1
-	int j1X = center - 300;
+	const int typeTop = 298;
+	const int typeHeight = 48;
+	const int typeGap = 10;
+	const int typeWidth = 136;
 
-	// Panneau joueur 2
-	int j2X = center + 20;
+	layout.j1Human = { leftX + 24, typeTop, leftX + 24 + typeWidth, typeTop + typeHeight };
+	layout.j1Bot = { leftX + 24 + typeWidth + typeGap, typeTop, leftX + 24 + typeWidth * 2 + typeGap, typeTop + typeHeight };
 
-	// Humain / Bot
-	layout.j1Human = { j1X, 180, j1X + 125, 225 };
-	layout.j1Bot = { j1X + 135, 180, j1X + 260, 225 };
+	layout.j2Human = { rightX + 24, typeTop, rightX + 24 + typeWidth, typeTop + typeHeight };
+	layout.j2Bot = { rightX + 24 + typeWidth + typeGap, typeTop, rightX + 24 + typeWidth * 2 + typeGap, typeTop + typeHeight };
 
-	layout.j2Human = { j2X, 180, j2X + 125, 225 };
-	layout.j2Bot = { j2X + 135, 180, j2X + 260, 225 };
+	const int diffTop = 384;
+	const int diffHeight = 44;
+	const int diffGap = 8;
+	const int diffWidth = 88;
 
-	// Difficultés joueur 1
-	layout.j1Easy = { j1X,       290, j1X + 80, 335 };
-	layout.j1Medium = { j1X + 90,  290, j1X + 170, 335 };
-	layout.j1Hard = { j1X + 180, 290, j1X + 260, 335 };
+	layout.j1Easy = { leftX + 24, diffTop, leftX + 24 + diffWidth, diffTop + diffHeight };
+	layout.j1Medium = { leftX + 24 + diffWidth + diffGap, diffTop, leftX + 24 + diffWidth * 2 + diffGap, diffTop + diffHeight };
+	layout.j1Hard = { leftX + 24 + (diffWidth + diffGap) * 2, diffTop, leftX + 24 + diffWidth * 3 + diffGap * 2, diffTop + diffHeight };
 
-	// Difficultés joueur 2
-	layout.j2Easy = { j2X,       290, j2X + 80, 335 };
-	layout.j2Medium = { j2X + 90,  290, j2X + 170, 335 };
-	layout.j2Hard = { j2X + 180, 290, j2X + 260, 335 };
+	layout.j2Easy = { rightX + 24, diffTop, rightX + 24 + diffWidth, diffTop + diffHeight };
+	layout.j2Medium = { rightX + 24 + diffWidth + diffGap, diffTop, rightX + 24 + diffWidth * 2 + diffGap, diffTop + diffHeight };
+	layout.j2Hard = { rightX + 24 + (diffWidth + diffGap) * 2, diffTop, rightX + 24 + diffWidth * 3 + diffGap * 2, diffTop + diffHeight };
 
-	// Bouton Jouer
-	layout.startButton = {
-		center - 110,
-		430,
-		center + 110,
-		490
-	};
+	layout.startButton = { center - 165, 548, center + 165, 610 };
 
 	return layout;
 }
@@ -45,328 +215,115 @@ EndGameLayout GetEndGameLayout(int windowWidth, int boardY)
 {
 	EndGameLayout layout{};
 
-	int center = windowWidth / 2;
-
-	int buttonWidth = 220;
-	int buttonHeight = 45;
-
-	int y = boardY + BOARD_SIZE + 20;
+	const int center = windowWidth / 2;
+	const int buttonWidth = 210;
+	const int buttonHeight = 50;
+	const int gap = 14;
+	const int y = boardY + BOARD_SIZE + 20;
 
 	layout.restartButton = {
-		center - buttonWidth - 10,
+		center - gap / 2 - buttonWidth,
 		y,
-		center - 10,
+		center - gap / 2,
 		y + buttonHeight
 	};
 
 	layout.changePlayersButton = {
-		center + 10,
+		center + gap / 2,
 		y,
-		center + buttonWidth + 10,
+		center + gap / 2 + buttonWidth,
 		y + buttonHeight
 	};
 
 	return layout;
 }
 
-void DrawMenuButton(
-	HDC hdc,
-	const RECT& rect,
-	const wchar_t* text,
-	bool selected,
-	COLORREF selectedColor)
+void DrawMenuButton(HDC hdc, const RECT& rect, const wchar_t* text, bool selected, COLORREF selectedColor, bool hovered)
 {
-	HBRUSH backgroundBrush;
-
-	if (selected)
-		backgroundBrush = CreateSolidBrush(selectedColor);
-	else
-		backgroundBrush = CreateSolidBrush(RGB(235, 235, 235));
-
-	FillRect(hdc, &rect, backgroundBrush);
-
-	FrameRect(
-		hdc,
-		&rect,
-		(HBRUSH)GetStockObject(BLACK_BRUSH)
-	);
-
-	SetBkMode(hdc, TRANSPARENT);
-
-	if (selected)
-		SetTextColor(hdc, RGB(255, 255, 255));
-	else
-		SetTextColor(hdc, RGB(30, 30, 30));
-
-	RECT textRect = rect;
-
-	DrawTextW(
-		hdc,
-		text,
-		-1,
-		&textRect,
-		DT_CENTER | DT_VCENTER | DT_SINGLELINE
-	);
-
-	DeleteObject(backgroundBrush);
+	UI::DrawButton(hdc, rect, text, selected, selectedColor, hovered, 14);
 }
 
-void DrawMenu(HDC hdc, int windowWidth)
+void DrawMenu(HDC hdc, int windowWidth, int windowHeight)
 {
-	MenuLayout layout = GetMenuLayout(windowWidth);
-
+	RECT client{ 0, 0, windowWidth, windowHeight };
+	UI::FillGradient(hdc, client, UI::BackgroundTop, UI::BackgroundBottom);
 	SetBkMode(hdc, TRANSPARENT);
 
-	// ==============================
-	// Titre
-	// ==============================
+	MenuLayout layout = GetMenuLayout(windowWidth);
+	const int center = windowWidth / 2;
 
-	HFONT titleFont = CreateFontW(
-		42,
-		0,
-		0,
-		0,
-		FW_BOLD,
-		FALSE,
-		FALSE,
-		FALSE,
-		DEFAULT_CHARSET,
-		OUT_DEFAULT_PRECIS,
-		CLIP_DEFAULT_PRECIS,
-		CLEARTYPE_QUALITY,
-		DEFAULT_PITCH | FF_DONTCARE,
-		L"Segoe UI"
-	);
+	float titleProgress = EaseOutCubic(Clamp01(gIntro / 0.65f));
+	int titleOffset = static_cast<int>((1.0f - titleProgress) * 22.0f);
 
-	HFONT oldFont = (HFONT)SelectObject(hdc, titleFont);
+	RECT eyebrowRect{ 0, 30 + titleOffset, windowWidth, 58 + titleOffset };
+	HFONT eyebrowFont = UI::CreateUiFont(12, FW_BOLD);
+	UI::DrawCenteredText(hdc, eyebrowRect, L"CLASSIC  /  AI ARENA", eyebrowFont, UI::Purple);
+	DeleteObject(eyebrowFont);
 
-	SetTextColor(hdc, RGB(30, 30, 30));
-
-	RECT titleRect = {
-		0,
-		40,
-		windowWidth,
-		100
-	};
-
-	DrawTextW(
-		hdc,
-		L"TIC TAC TOE",
-		-1,
-		&titleRect,
-		DT_CENTER | DT_VCENTER | DT_SINGLELINE
-	);
-
-	SelectObject(hdc, oldFont);
+	RECT titleRect{ 0, 54 + titleOffset, windowWidth, 108 + titleOffset };
+	HFONT titleFont = UI::CreateUiFont(42, FW_BOLD, L"Segoe UI Variable Display");
+	UI::DrawCenteredText(hdc, titleRect, L"Tic Tac Toe", titleFont, UI::Text);
 	DeleteObject(titleFont);
 
-	// ==============================
-	// Police normale
-	// ==============================
+	RECT subtitleRect{ 0, 108 + titleOffset, windowWidth, 136 + titleOffset };
+	HFONT subtitleFont = UI::CreateUiFont(14, FW_NORMAL);
+	UI::DrawCenteredText(hdc, subtitleRect, L"Configure les deux joueurs, puis lance la partie.", subtitleFont, UI::Muted);
+	DeleteObject(subtitleFont);
 
-	HFONT menuFont = CreateFontW(
-		22,
-		0,
-		0,
-		0,
-		FW_BOLD,
-		FALSE,
-		FALSE,
-		FALSE,
-		DEFAULT_CHARSET,
-		OUT_DEFAULT_PRECIS,
-		CLIP_DEFAULT_PRECIS,
-		CLEARTYPE_QUALITY,
-		DEFAULT_PITCH | FF_DONTCARE,
-		L"Segoe UI"
-	);
+	RECT card1{ center - 342, 176, center - 12, 494 };
+	RECT card2{ center + 12, 176, center + 342, 494 };
 
-	oldFont = (HFONT)SelectObject(hdc, menuFont);
+	DrawPlayerCard(hdc, card1, true, layout, 0.05f);
+	DrawPlayerCard(hdc, card2, false, layout, 0.13f);
 
-	int center = windowWidth / 2;
+	RECT startRect = OffsetAnimated(layout.startButton, 0.20f);
+	DrawMenuButton(hdc, startRect, L"LANCER LA PARTIE", true, UI::Purple, IsHovered(MenuHoverTarget::Start));
 
-	// ==============================
-	// Joueur 1
-	// ==============================
+	RECT footer{ 0, windowHeight - 54, windowWidth, windowHeight - 20 };
+	HFONT footerFont = UI::CreateUiFont(11, FW_NORMAL);
+	UI::DrawCenteredText(hdc, footer, L"Facile : Random   •   Moyen : MCTS   •   Difficile : Minimax alpha-beta", footerFont, UI::Muted);
+	DeleteObject(footerFont);
+}
 
-	RECT j1Title = {
-		center - 300,
-		115,
-		center - 40,
-		160
-	};
+bool UpdateMenuHover(POINT mousePoint, int windowWidth)
+{
+	MenuLayout layout = GetMenuLayout(windowWidth);
+	MenuHoverTarget newHover = MenuHoverTarget::None;
 
-	SetTextColor(hdc, RGB(220, 40, 40));
+	if (PtInRect(&layout.j1Human, mousePoint)) newHover = MenuHoverTarget::J1Human;
+	else if (PtInRect(&layout.j1Bot, mousePoint)) newHover = MenuHoverTarget::J1Bot;
+	else if (player1Type == PlayerType::Bot && PtInRect(&layout.j1Easy, mousePoint)) newHover = MenuHoverTarget::J1Easy;
+	else if (player1Type == PlayerType::Bot && PtInRect(&layout.j1Medium, mousePoint)) newHover = MenuHoverTarget::J1Medium;
+	else if (player1Type == PlayerType::Bot && PtInRect(&layout.j1Hard, mousePoint)) newHover = MenuHoverTarget::J1Hard;
+	else if (PtInRect(&layout.j2Human, mousePoint)) newHover = MenuHoverTarget::J2Human;
+	else if (PtInRect(&layout.j2Bot, mousePoint)) newHover = MenuHoverTarget::J2Bot;
+	else if (player2Type == PlayerType::Bot && PtInRect(&layout.j2Easy, mousePoint)) newHover = MenuHoverTarget::J2Easy;
+	else if (player2Type == PlayerType::Bot && PtInRect(&layout.j2Medium, mousePoint)) newHover = MenuHoverTarget::J2Medium;
+	else if (player2Type == PlayerType::Bot && PtInRect(&layout.j2Hard, mousePoint)) newHover = MenuHoverTarget::J2Hard;
+	else if (PtInRect(&layout.startButton, mousePoint)) newHover = MenuHoverTarget::Start;
 
-	DrawTextW(
-		hdc,
-		L"Joueur 1 - X",
-		-1,
-		&j1Title,
-		DT_CENTER | DT_VCENTER | DT_SINGLELINE
-	);
+	if (newHover == gHover)
+		return false;
 
-	DrawMenuButton(
-		hdc,
-		layout.j1Human,
-		L"Humain",
-		player1Type == PlayerType::Human,
-		RGB(220, 40, 40)
-	);
+	gHover = newHover;
+	return true;
+}
 
-	DrawMenuButton(
-		hdc,
-		layout.j1Bot,
-		L"Bot",
-		player1Type == PlayerType::Bot,
-		RGB(220, 40, 40)
-	);
+void ClearMenuHover()
+{
+	gHover = MenuHoverTarget::None;
+}
 
-	// ==============================
-	// Joueur 2
-	// ==============================
+void ResetMenuAnimation()
+{
+	gIntro = 0.0f;
+}
 
-	RECT j2Title = {
-		center + 20,
-		115,
-		center + 280,
-		160
-	};
+bool TickMenuAnimation()
+{
+	if (gIntro >= 1.0f)
+		return false;
 
-	SetTextColor(hdc, RGB(40, 100, 220));
-
-	DrawTextW(
-		hdc,
-		L"Joueur 2 - O",
-		-1,
-		&j2Title,
-		DT_CENTER | DT_VCENTER | DT_SINGLELINE
-	);
-
-	DrawMenuButton(
-		hdc,
-		layout.j2Human,
-		L"Humain",
-		player2Type == PlayerType::Human,
-		RGB(40, 100, 220)
-	);
-
-	DrawMenuButton(
-		hdc,
-		layout.j2Bot,
-		L"Bot",
-		player2Type == PlayerType::Bot,
-		RGB(40, 100, 220)
-	);
-
-	// ==============================
-	// Difficulté joueur 1
-	// ==============================
-
-	if (player1Type == PlayerType::Bot)
-	{
-		RECT difficultyTitle = {
-			center - 300,
-			240,
-			center - 40,
-			280
-		};
-
-		SetTextColor(hdc, RGB(60, 60, 60));
-
-		DrawTextW(
-			hdc,
-			L"Difficulté",
-			-1,
-			&difficultyTitle,
-			DT_CENTER | DT_VCENTER | DT_SINGLELINE
-		);
-
-		DrawMenuButton(
-			hdc,
-			layout.j1Easy,
-			L"Facile",
-			player1Difficulty == BotDifficulty::Easy,
-			RGB(220, 40, 40)
-		);
-
-		DrawMenuButton(
-			hdc,
-			layout.j1Medium,
-			L"Moyen",
-			player1Difficulty == BotDifficulty::Medium,
-			RGB(220, 40, 40)
-		);
-
-		DrawMenuButton(
-			hdc,
-			layout.j1Hard,
-			L"Difficile",
-			player1Difficulty == BotDifficulty::Hard,
-			RGB(220, 40, 40)
-		);
-	}
-
-	// ==============================
-	// Difficulté joueur 2
-	// ==============================
-
-	if (player2Type == PlayerType::Bot)
-	{
-		RECT difficultyTitle = {
-			center + 20,
-			240,
-			center + 280,
-			280
-		};
-
-		SetTextColor(hdc, RGB(60, 60, 60));
-
-		DrawTextW(
-			hdc,
-			L"Difficulté",
-			-1,
-			&difficultyTitle,
-			DT_CENTER | DT_VCENTER | DT_SINGLELINE
-		);
-
-		DrawMenuButton(
-			hdc,
-			layout.j2Easy,
-			L"Facile",
-			player2Difficulty == BotDifficulty::Easy,
-			RGB(40, 100, 220)
-		);
-
-		DrawMenuButton(
-			hdc,
-			layout.j2Medium,
-			L"Moyen",
-			player2Difficulty == BotDifficulty::Medium,
-			RGB(40, 100, 220)
-		);
-
-		DrawMenuButton(
-			hdc,
-			layout.j2Hard,
-			L"Difficile",
-			player2Difficulty == BotDifficulty::Hard,
-			RGB(40, 100, 220)
-		);
-	}
-
-	// ==============================
-	// Jouer
-	// ==============================
-
-	DrawMenuButton(
-		hdc,
-		layout.startButton,
-		L"JOUER",
-		true,
-		RGB(50, 150, 70)
-	);
-
-	SelectObject(hdc, oldFont);
-	DeleteObject(menuFont);
+	gIntro = std::min(1.0f, gIntro + 0.045f);
+	return true;
 }
