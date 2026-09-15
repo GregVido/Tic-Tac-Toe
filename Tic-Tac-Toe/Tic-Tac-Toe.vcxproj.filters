@@ -59,6 +59,9 @@
     <ClCompile Include="MinimaxAI.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\..\Downloads\modern_ui_tictactoe\modern_ui\UI.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Tic-Tac-Toe.rc">

@@ -150,6 +150,7 @@
     <ClInclude Include="Tic-Tac-Toe.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\..\Downloads\modern_ui_tictactoe\modern_ui\UI.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="MCTS.cpp" />
     <ClCompile Include="Menu.cpp" />
