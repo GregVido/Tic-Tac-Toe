@@ -39,7 +39,7 @@
     <ClInclude Include="MinimaxAI.h">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\Downloads\modern_ui_tictactoe\modern_ui\UI.h">
+    <ClInclude Include="UI.h">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
   </ItemGroup>
@@ -59,7 +59,7 @@
     <ClCompile Include="MinimaxAI.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\Downloads\modern_ui_tictactoe\modern_ui\UI.cpp">
+    <ClCompile Include="UI.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
   </ItemGroup>

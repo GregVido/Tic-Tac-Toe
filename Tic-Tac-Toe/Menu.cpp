@@ -324,6 +324,6 @@ bool TickMenuAnimation()
 	if (gIntro >= 1.0f)
 		return false;
 
-	gIntro = std::min(1.0f, gIntro + 0.045f);
+	gIntro = min(1.0f, gIntro + 0.045f);
 	return true;
 }
