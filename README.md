@@ -18,3 +18,16 @@
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE.txt)
 
 </div>
+
+## 🎮 À propos
+
+**Tic-Tac-Toe** est une implémentation native du célèbre Morpion développée en **C++20** avec l'API **Win32**.
+
+Le projet propose une interface graphique moderne ainsi que plusieurs niveaux d'intelligence artificielle utilisant différentes stratégies, allant du simple choix aléatoire jusqu'à un **Minimax avec élagage alpha-bêta**.
+
+Chaque joueur peut être configuré indépendamment comme **Humain** ou **Bot**, permettant plusieurs types de parties :
+
+- 👤 **Humain vs Humain**
+- 👤 **Humain vs Bot**
+- 🤖 **Bot vs Bot**
+- 🤖 Choix indépendant de la difficulté pour chaque bot
