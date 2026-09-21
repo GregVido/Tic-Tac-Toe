@@ -40,3 +40,5 @@ Chaque joueur peut être configuré indépendamment comme **Humain** ou **Bot**,
 - Configuration indépendante des deux joueurs
 - Trois niveaux d'intelligence artificielle
 - Parties Humain vs Humain, Humain vs IA et IA vs IA
+
+## 🤖 Intelligences artificielles
