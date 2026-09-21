@@ -42,3 +42,9 @@ Chaque joueur peut être configuré indépendamment comme **Humain** ou **Bot**,
 - Parties Humain vs Humain, Humain vs IA et IA vs IA
 
 ## 🤖 Intelligences artificielles
+
+| Difficulté | Algorithme | Description |
+|:---:|:---:|---|
+| **Facile** | Random | Sélectionne aléatoirement une case disponible. |
+| **Moyen** | MCTS | Utilise **Monte Carlo Tree Search** pour simuler différentes parties avant de choisir un coup. |
+| **Difficile** | Minimax | Explore les possibilités avec **Minimax + élagage alpha-bêta** afin de jouer de manière optimale. |
