@@ -31,3 +31,5 @@ Chaque joueur peut être configuré indépendamment comme **Humain** ou **Bot**,
 - 👤 **Humain vs Bot**
 - 🤖 **Bot vs Bot**
 - 🤖 Choix indépendant de la difficulté pour chaque bot
+
+## ✨ Fonctionnalités
