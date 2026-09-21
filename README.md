@@ -33,3 +33,10 @@ Chaque joueur peut être configuré indépendamment comme **Humain** ou **Bot**,
 - 🤖 Choix indépendant de la difficulté pour chaque bot
 
 ## ✨ Fonctionnalités
+
+- Interface graphique native Windows
+- Plateau de Tic-Tac-Toe interactif
+- Joueur de départ choisi aléatoirement
+- Configuration indépendante des deux joueurs
+- Trois niveaux d'intelligence artificielle
+- Parties Humain vs Humain, Humain vs IA et IA vs IA
