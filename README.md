@@ -49,4 +49,8 @@ Chaque joueur peut être configuré indépendamment comme **Humain** ou **Bot**,
 | **Moyen** | MCTS | Utilise **Monte Carlo Tree Search** pour simuler différentes parties avant de choisir un coup. |
 | **Difficile** | Minimax | Explore les possibilités avec **Minimax + élagage alpha-bêta** afin de jouer de manière optimale. |
 
-### 🟢 Random
+### Random
+
+Le niveau facile récupère l'ensemble des cases disponibles puis en choisit une aléatoirement.
+
+Il permet d'obtenir un adversaire rapide, imprévisible et volontairement imparfait.
