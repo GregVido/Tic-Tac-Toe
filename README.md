@@ -54,3 +54,5 @@ Chaque joueur peut être configuré indépendamment comme **Humain** ou **Bot**,
 Le niveau facile récupère l'ensemble des cases disponibles puis en choisit une aléatoirement.
 
 Il permet d'obtenir un adversaire rapide, imprévisible et volontairement imparfait.
+
+### Monte Carlo Tree Search
