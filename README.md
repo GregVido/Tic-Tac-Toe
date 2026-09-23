@@ -67,3 +67,5 @@ L'algorithme fonctionne en quatre étapes :
 4. **Backpropagation** du résultat
 
 La sélection utilise un compromis entre **exploration** et **exploitation** inspiré de la formule UCT.
+
+### Minimax + Alpha-Beta
