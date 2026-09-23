@@ -48,3 +48,5 @@ Chaque joueur peut être configuré indépendamment comme **Humain** ou **Bot**,
 | **Facile** | Random | Sélectionne aléatoirement une case disponible. |
 | **Moyen** | MCTS | Utilise **Monte Carlo Tree Search** pour simuler différentes parties avant de choisir un coup. |
 | **Difficile** | Minimax | Explore les possibilités avec **Minimax + élagage alpha-bêta** afin de jouer de manière optimale. |
+
+### 🟢 Random
