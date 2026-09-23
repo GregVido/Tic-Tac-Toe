@@ -56,3 +56,14 @@ Le niveau facile récupère l'ensemble des cases disponibles puis en choisit une
 Il permet d'obtenir un adversaire rapide, imprévisible et volontairement imparfait.
 
 ### Monte Carlo Tree Search
+
+Le niveau moyen utilise une implémentation de **MCTS - Monte Carlo Tree Search**.
+
+L'algorithme fonctionne en quatre étapes :
+
+1. **Sélection** d'une branche prometteuse
+2. **Expansion** de l'arbre
+3. **Simulation** d'une partie aléatoire
+4. **Backpropagation** du résultat
+
+La sélection utilise un compromis entre **exploration** et **exploitation** inspiré de la formule UCT.
