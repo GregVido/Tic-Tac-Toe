@@ -69,3 +69,11 @@ L'algorithme fonctionne en quatre étapes :
 La sélection utilise un compromis entre **exploration** et **exploitation** inspiré de la formule UCT.
 
 ### Minimax + Alpha-Beta
+
+Le niveau difficile utilise **Minimax** afin d'analyser récursivement les coups possibles.
+
+L'IA cherche à maximiser son propre score tout en supposant que son adversaire jouera lui aussi de manière optimale.
+
+L'**élagage alpha-bêta** permet d'éviter l'analyse de branches qui ne peuvent plus influencer le résultat final.
+
+Sur un plateau de Tic-Tac-Toe 3×3, cette méthode permet à l'IA de rechercher l'ensemble des positions pertinentes et de jouer de manière optimale.
